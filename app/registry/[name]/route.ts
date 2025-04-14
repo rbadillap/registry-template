@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import path from "path"
 import { promises as fs } from "fs"
 import { registryItemSchema } from "shadcn/registry"
+import { verifyToken } from "@/lib/shadcn/registry/utils"
 
 // This route shows an example for serving a component using a route handler.
 export async function GET(
@@ -9,6 +10,36 @@ export async function GET(
   { params }: { params: Promise<{ name: string }> }
 ) {
   try {
+    // Get the authorization token from ?token=
+    const url = new URL(request.url)
+    const token = url.searchParams.get('token')
+
+    if (!token) {
+      // If accessing via browser, redirect to login with return URL
+      if (request.headers.get("accept")?.includes("text/html")) {
+        // const returnUrl = encodeURIComponent(request.nextUrl?.pathname)
+        const returnUrl = encodeURIComponent(url.pathname)
+        return NextResponse.redirect(
+          new URL(`/registry/access/login?returnUrl=${returnUrl}`, request.url)
+        )
+      }
+      
+      // If API request, return 401
+      return NextResponse.json(
+        { error: "Authorization token is required" },
+        { status: 401 }
+      )
+    }
+
+    const isValidToken = await verifyToken(token)
+
+    if (!isValidToken) {
+      return NextResponse.json(
+        { error: "Invalid or expired token" },
+        { status: 401 }
+      )
+    }
+
     const { name } = await params
     // Cache the registry import
     const registryData = await import("@/registry.json")
