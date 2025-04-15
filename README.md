@@ -1,20 +1,31 @@
 # registry-template
 
-You can use the `shadcn` CLI to run your own component registry. Running your own
-component registry allows you to distribute your custom components, hooks, pages, and
-other files to any React project.
+@shadcn
 
-## Getting Started
+### How to use
 
-This is a template for creating a custom registry using Next.js.
+1. run this project locally
 
-- The template uses a `registry.json` file to define components and their files.
-- The `shadcn build` command is used to build the registry.
-- The registry items are served as static files under `public/r/[name].json`.
-- The template also includes a route handler for serving registry items.
-- Every registry item are compatible with the `shadcn` CLI.
-- We have also added v0 integration using the `Open in v0` api.
+```sh
+pnpm install
+pnpm run dev
+```
 
-## Documentation
+2. create a new project in a separate tab
 
-Visit the [shadcn documentation](https://ui.shadcn.com/docs/registry) to view the full documentation.
+```sh
+pnpm dlx shadcn init
+```
+
+3. add registry toolkit `app/registry/[name]/route.ts`
+
+```sh
+pnpm dlx shadcn add http://localhost:3000/registry/registry-access
+
+# or directly to the r folder
+pnpm dlx shadcn add http://localhost:3000/r/registry-access.json
+
+# or in this vercel.app domain
+pnpm dlx shadcn add https://registry-template-zeta.vercel.app/registry/registry-access
+pnpm dlx shadcn add https://registry-template-zeta.vercel.app/r/registry-access.json
+```
